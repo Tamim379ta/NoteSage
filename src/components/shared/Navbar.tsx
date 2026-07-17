@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { authClient, useSession } from "@/lib/auth-client";
+import Image from "next/image";
 
 export function Navbar() {
   const { data: sessionData, isPending } = useSession();
@@ -28,8 +29,14 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 w-full bg-white border-b border-neutral-border">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between gap-3">
-          <Link href="/" className="text-xl font-bold text-primary">
-            NoteSage
+          <Link href="/" >
+            <Image
+              src={'/assets/logo.png'}
+              alt="logo"
+              width={150}
+              height={50}
+            />
+
           </Link>
 
           <div className="hidden items-center gap-6 md:flex">

@@ -8,7 +8,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Brand */}
         <div>
-          <h3 className="text-lg font-bold text-white mb-3">NoteSage</h3>
+          <h3 className="text-lg font-bold text-white mb-3">NoteSage <span className="text-primary">.</span> </h3>
           <p className="text-sm text-neutral-border">
             Turn your notes into summaries, quizzes, and flashcards with AI.
           </p>

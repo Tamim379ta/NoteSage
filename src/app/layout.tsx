@@ -4,7 +4,7 @@ import { Navbar,  } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
 
 export const metadata: Metadata = {
-  title: "NoteSage",
+  title: "Notesage",
   description: "AI-powered study companion — turn your notes into summaries, quizzes, and flashcards.",
 };
 
