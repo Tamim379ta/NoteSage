@@ -52,9 +52,7 @@ export function Navbar() {
 
             {isLoggedIn && (
   <>
-    <Link href="/dashboard" className="text-sm font-medium hover:text-primary">
-      Dashboard
-    </Link>
+   
     <Link href="/chat" className="text-sm font-medium hover:text-primary">
       AI Chat
     </Link>
@@ -129,9 +127,7 @@ export function Navbar() {
 
             {isLoggedIn && (
   <>
-    <Link href="/dashboard" className="text-sm font-medium hover:text-primary">
-      Dashboard
-    </Link>
+   
     <Link href="/chat" className="text-sm font-medium hover:text-primary">
       AI Chat
     </Link>

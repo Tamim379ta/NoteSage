@@ -10,91 +10,100 @@ import {
   HiOutlineSparkles,
 } from "react-icons/hi2";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
+import { useSession } from "@/lib/auth-client";
+
 
 export default function AddMaterialPage() {
-  const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [dragging, setDragging] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const selected = e.target.files?.[0];
-    if (selected) validateAndSetFile(selected);
+const router = useRouter();
+const { data: session } = useSession();
+const userId = (session?.user as any)?.id || "demo-user-id";
+
+const [title, setTitle] = useState("");
+const [file, setFile] = useState<File | null>(null);
+const [dragging, setDragging] = useState(false);
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState("");
+const [category, setCategory] = useState("General");
+
+const categories = [
+  "Biology", "History", "Computer Science", "Law",
+  "Economics", "Chemistry", "Physics", "Mathematics", "General",
+];
+
+function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const selected = e.target.files?.[0];
+  if (selected) validateAndSetFile(selected);
+}
+
+function validateAndSetFile(selected: File) {
+  const allowed = ["application/pdf", "text/plain"];
+  if (!allowed.includes(selected.type)) {
+    setError("Only PDF and TXT files are allowed.");
+    return;
+  }
+  if (selected.size > 10 * 1024 * 1024) {
+    setError("File must be under 10MB.");
+    return;
+  }
+  setError("");
+  setFile(selected);
+  if (!title) setTitle(selected.name.replace(/\.[^/.]+$/, ""));
+}
+
+function handleDrop(e: React.DragEvent) {
+  e.preventDefault();
+  setDragging(false);
+  const dropped = e.dataTransfer.files?.[0];
+  if (dropped) validateAndSetFile(dropped);
+}
+
+async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault();
+  setError("");
+
+  if (!file) {
+    setError("Please select a file.");
+    return;
+  }
+  if (!title.trim()) {
+    setError("Please enter a title.");
+    return;
   }
 
-  function validateAndSetFile(selected: File) {
-    const allowed = ["application/pdf", "text/plain"];
-    if (!allowed.includes(selected.type)) {
-      setError("Only PDF and TXT files are allowed.");
-      return;
-    }
-    if (selected.size > 10 * 1024 * 1024) {
-      setError("File must be under 10MB.");
-      return;
-    }
-    setError("");
-    setFile(selected);
-    if (!title) setTitle(selected.name.replace(/\.[^/.]+$/, ""));
-  }
+  setLoading(true);
 
-  function handleDrop(e: React.DragEvent) {
-    e.preventDefault();
-    setDragging(false);
-    const dropped = e.dataTransfer.files?.[0];
-    if (dropped) validateAndSetFile(dropped);
-  }
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("title", title);
+    formData.append("category", category);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-
-    if (!file) {
-      setError("Please select a file.");
-      return;
-    }
-    if (!title.trim()) {
-      setError("Please enter a title.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("title", title);
-
-      // TODO: replace hardcoded userId with real session user id from Better Auth
-      console.log("SERVER URL:", process.env.NEXT_PUBLIC_SERVER_URL);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/documents/upload`,
-        {
-          method: "POST",
-          headers: {
-            "x-user-id": "demo-user-id",
-          },
-          body: formData,
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || "Upload failed. Try again.");
-        return;
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/documents/upload`,
+      {
+        method: "POST",
+        headers: {
+          "x-user-id": userId,
+        },
+        body: formData,
       }
+    );
 
-      // Server responds immediately with documentId, processing happens in background
-      router.push(`/materials/manage?uploaded=${data.documentId}`);
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.error || "Upload failed. Try again.");
+      return;
     }
-  }
 
+    router.push(`/materials/manage?uploaded=${data.documentId}`);
+  } catch (err) {
+    setError("Something went wrong. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+}
   return (
     <ProtectedRoute>
       <main className="min-h-screen bg-neutral-bg">
@@ -149,6 +158,23 @@ export default function AddMaterialPage() {
               </div>
             </FadeUp>
 
+            <FadeUp delay={0.08}>
+              <div className="bg-white border border-neutral-border rounded-2xl p-6">
+                <label className="text-xs font-medium text-neutral-text/60 block mb-2">
+                  Category
+                </label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full border border-neutral-border rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                >
+                  {categories.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+            </FadeUp>
+
             {/* File upload */}
             <FadeUp delay={0.1}>
               <div className="bg-white border border-neutral-border rounded-2xl p-6">
@@ -187,8 +213,8 @@ export default function AddMaterialPage() {
                     onDragLeave={() => setDragging(false)}
                     onDrop={handleDrop}
                     className={`flex flex-col items-center justify-center border-2 border-dashed rounded-2xl py-14 cursor-pointer transition-colors ${dragging
-                        ? "border-primary bg-primary/5"
-                        : "border-neutral-border hover:border-primary/50 hover:bg-neutral-bg"
+                      ? "border-primary bg-primary/5"
+                      : "border-neutral-border hover:border-primary/50 hover:bg-neutral-bg"
                       }`}
                   >
                     <HiOutlineCloudArrowUp

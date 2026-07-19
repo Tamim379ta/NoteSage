@@ -1,15 +1,17 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { FadeUp } from "@/components/animations/FadeUp";
 import {
   HiOutlinePaperAirplane,
   HiOutlineSparkles,
   HiOutlineBookOpen,
   HiOutlineTrash,
+  HiOutlineDocumentText,
 } from "react-icons/hi2";
+import { useSession } from "@/lib/auth-client";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
-
 
 interface Message {
   role: "user" | "assistant";
@@ -18,25 +20,46 @@ interface Message {
 
 const SUGGESTED_PROMPTS = [
   "Summarize the key concepts from my notes",
-  "Quiz me on the most important topics",
+  "What are the most important points I should remember?",
   "Explain the hardest concept in simple terms",
   "What should I focus on for an exam?",
 ];
 
-export default function ChatPage() {
+// 1. Content component focuses entirely on the UI and chat state logic
+function ChatContent() {
+  const searchParams = useSearchParams();
+  const documentId = searchParams.get("documentId");
+  const { data: session } = useSession();
+  const userId = (session?.user as any)?.id || "demo-user-id";
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [docTitle, setDocTitle] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto scroll to bottom on new message
+  useEffect(() => {
+    if (!documentId) return;
+    async function fetchDocTitle() {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/documents/public/${documentId}`
+        );
+        const data = await res.json();
+        setDocTitle(data.title);
+      } catch {
+        // ignore
+      }
+    }
+    fetchDocTitle();
+  }, [documentId]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Auto resize textarea
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.style.height = "auto";
@@ -52,7 +75,6 @@ export default function ChatPage() {
     setInput("");
     setLoading(true);
 
-    // Add empty assistant message to stream into
     setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
     try {
@@ -62,11 +84,12 @@ export default function ChatPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-user-id": "demo-user-id",
+            "x-user-id": userId,
           },
           body: JSON.stringify({
             message: content,
             sessionId,
+            documentId: documentId || undefined,
           }),
         }
       );
@@ -89,7 +112,6 @@ export default function ChatPage() {
             const parsed = JSON.parse(line.replace("data: ", ""));
 
             if (parsed.text) {
-              // Append streamed text to last assistant message
               setMessages((prev) => {
                 const updated = [...prev];
                 updated[updated.length - 1] = {
@@ -139,7 +161,6 @@ export default function ChatPage() {
   }
 
   return (
-     <ProtectedRoute>
     <main className="flex flex-col h-[calc(100vh-65px)] bg-neutral-bg">
       {/* Header */}
       <div className="bg-white border-b border-neutral-border px-6 py-4 flex items-center justify-between flex-shrink-0">
@@ -149,9 +170,16 @@ export default function ChatPage() {
           </div>
           <div>
             <p className="text-sm font-bold text-neutral-text">NoteSage AI</p>
-            <p className="text-xs text-neutral-text/40">
-              Ask me anything about your study material
-            </p>
+            {docTitle ? (
+              <p className="text-xs text-primary flex items-center gap-1">
+                <HiOutlineDocumentText size={11} />
+                Chatting about: {docTitle}
+              </p>
+            ) : (
+              <p className="text-xs text-neutral-text/40">
+                Ask me anything about your study material
+              </p>
+            )}
           </div>
         </div>
 
@@ -167,6 +195,18 @@ export default function ChatPage() {
         )}
       </div>
 
+      {/* Document context banner */}
+      {documentId && docTitle && messages.length === 0 && (
+        <div className="bg-primary/5 border-b border-primary/10 px-6 py-3 flex items-center gap-2">
+          <HiOutlineDocumentText size={14} className="text-primary" />
+          <p className="text-xs text-primary">
+            AI has full context of{" "}
+            <span className="font-semibold">{docTitle}</span> — ask anything
+            about it.
+          </p>
+        </div>
+      )}
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
         {messages.length === 0 ? (
@@ -175,14 +215,14 @@ export default function ChatPage() {
               <HiOutlineBookOpen size={28} />
             </div>
             <h2 className="text-lg font-bold text-neutral-text mb-2">
-              Your AI study tutor
+              {docTitle ? `Ask me about "${docTitle}"` : "Your AI study tutor"}
             </h2>
             <p className="text-sm text-neutral-text/50 max-w-sm mb-8">
-              Ask me to explain concepts, quiz you, summarize topics, or help
-              you understand anything from your notes.
+              {docTitle
+                ? "I have full context of this document. Ask me to explain concepts, summarize topics, or clarify anything confusing."
+                : "Ask me to explain concepts, quiz you, summarize topics, or help you understand anything from your notes."}
             </p>
 
-            {/* Suggested prompts */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg">
               {SUGGESTED_PROMPTS.map((prompt) => (
                 <button
@@ -200,7 +240,9 @@ export default function ChatPage() {
           messages.map((msg, i) => (
             <div
               key={i}
-              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex ${
+                msg.role === "user" ? "justify-end" : "justify-start"
+              }`}
             >
               {msg.role === "assistant" && (
                 <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 mr-3 mt-1">
@@ -239,7 +281,11 @@ export default function ChatPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask anything about your notes... (Enter to send, Shift+Enter for new line)"
+            placeholder={
+              docTitle
+                ? `Ask about "${docTitle}"...`
+                : "Ask anything about your notes... (Enter to send)"
+            }
             rows={1}
             className="flex-1 border border-neutral-border rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none max-h-32 overflow-y-auto"
           />
@@ -257,6 +303,20 @@ export default function ChatPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+// 2. Wrap ProtectedRoute on the outside, then Suspense on the inside
+export default function ChatPage() {
+  return (
+    <ProtectedRoute>
+      <Suspense fallback={
+        <div className="flex flex-col h-[calc(100vh-65px)] bg-neutral-bg animate-pulse items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-neutral-200" />
+        </div>
+      }>
+        <ChatContent />
+      </Suspense>
     </ProtectedRoute>
   );
 }
