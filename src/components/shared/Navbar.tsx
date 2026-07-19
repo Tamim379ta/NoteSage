@@ -51,15 +51,18 @@ export function Navbar() {
             </Link>
 
             {isLoggedIn && (
-              <>
-                <Link href="/dashboard" className="text-sm font-medium hover:text-primary">
-                  Dashboard
-                </Link>
-                <Link href="/chat" className="text-sm font-medium hover:text-primary">
-                  AI Chat
-                </Link>
-              </>
-            )}
+  <>
+    <Link href="/dashboard" className="text-sm font-medium hover:text-primary">
+      Dashboard
+    </Link>
+    <Link href="/chat" className="text-sm font-medium hover:text-primary">
+      AI Chat
+    </Link>
+    <Link href="/materials/manage" className="text-sm font-medium hover:text-primary">
+      My Materials
+    </Link>
+  </>
+)}
           </div>
 
           <div className="flex items-center gap-3">
@@ -125,15 +128,18 @@ export function Navbar() {
             </Link>
 
             {isLoggedIn && (
-              <>
-                <Link href="/dashboard" className="text-sm font-medium hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
-                  Dashboard
-                </Link>
-                <Link href="/chat" className="text-sm font-medium hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
-                  AI Chat
-                </Link>
-              </>
-            )}
+  <>
+    <Link href="/dashboard" className="text-sm font-medium hover:text-primary">
+      Dashboard
+    </Link>
+    <Link href="/chat" className="text-sm font-medium hover:text-primary">
+      AI Chat
+    </Link>
+    <Link href="/materials/manage" className="text-sm font-medium hover:text-primary">
+      My Materials
+    </Link>
+  </>
+)}
 
             {isLoggedIn ? (
               <button

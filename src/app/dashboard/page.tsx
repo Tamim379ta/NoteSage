@@ -1,17 +1,12 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FadeUp } from "@/components/animations/FadeUp";
 import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
+  BarChart, Bar, LineChart, Line,
+  XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer,
 } from "recharts";
 import {
   HiOutlineDocumentText,
@@ -22,36 +17,24 @@ import {
   HiOutlineFire,
 } from "react-icons/hi2";
 import { AiOutlineCompass } from "react-icons/ai";
+import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 
 
-// --- Static data (replace with API calls later) ---
+interface DashboardStats {
+  totalDocuments: number;
+  totalFlashcards: number;
+  totalQuizzes: number;
+  recentDocuments: any[];
+  documentsOverTime: { month: string; documents: number }[];
+}
 
-const stats = [
-  {
-    label: "Documents uploaded",
-    value: "12",
-    icon: <HiOutlineDocumentText size={20} />,
-    color: "bg-primary/10 text-primary",
-  },
-  {
-    label: "Flashcards generated",
-    value: "348",
-    icon: <HiOutlineRectangleStack size={20} />,
-    color: "bg-amber-100 text-amber-600",
-  },
-  {
-    label: "Quizzes completed",
-    value: "27",
-    icon: <HiOutlineClipboardDocumentList size={20} />,
-    color: "bg-green-100 text-green-600",
-  },
-  {
-    label: "Day streak",
-    value: "9",
-    icon: <HiOutlineFire size={20} />,
-    color: "bg-red-100 text-red-500",
-  },
-];
+const DEFAULT_STATS: DashboardStats = {
+  totalDocuments: 0,
+  totalFlashcards: 0,
+  totalQuizzes: 0,
+  recentDocuments: [],
+  documentsOverTime: [],
+};
 
 const weeklyActivity = [
   { day: "Mon", minutes: 25 },
@@ -63,53 +46,13 @@ const weeklyActivity = [
   { day: "Sun", minutes: 20 },
 ];
 
-const documentsOverTime = [
-  { month: "Jan", documents: 1 },
-  { month: "Feb", documents: 2 },
-  { month: "Mar", documents: 3 },
-  { month: "Apr", documents: 5 },
-  { month: "May", documents: 8 },
-  { month: "Jun", documents: 12 },
-];
-
 const quizScores = [
   { quiz: "Quiz 1", score: 60 },
   { quiz: "Quiz 2", score: 72 },
   { quiz: "Quiz 3", score: 65 },
   { quiz: "Quiz 4", score: 80 },
-  { quiz: "Quiz 5", score: 78 },
-  { quiz: "Quiz 6", score: 88 },
-  { quiz: "Quiz 7", score: 92 },
-];
-
-const recentDocuments = [
-  {
-    id: "1",
-    title: "Cell Biology — Membrane Transport",
-    category: "Biology",
-    flashcards: 24,
-    quizQuestions: 15,
-    createdAt: "2025-06-20",
-    status: "ready",
-  },
-  {
-    id: "3",
-    title: "Data Structures — Trees & Graphs",
-    category: "Computer Science",
-    flashcards: 40,
-    quizQuestions: 25,
-    createdAt: "2025-06-18",
-    status: "ready",
-  },
-  {
-    id: "6",
-    title: "Organic Chemistry — Reaction Mechanisms",
-    category: "Chemistry",
-    flashcards: 45,
-    quizQuestions: 30,
-    createdAt: "2025-06-17",
-    status: "processing",
-  },
+  { quiz: "Quiz 5", score: 88 },
+  { quiz: "Quiz 6", score: 92 },
 ];
 
 const quickActions = [
@@ -136,19 +79,90 @@ const quickActions = [
   },
 ];
 
-// --- Custom tooltip for charts ---
 function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-white border border-neutral-border rounded-xl px-3 py-2 text-xs shadow-sm">
       <p className="text-neutral-text/50 mb-1">{label}</p>
-      <p className="font-semibold text-neutral-text">{payload[0].value}{payload[0].name === "minutes" ? " min" : payload[0].name === "score" ? "%" : ""}</p>
+      <p className="font-semibold text-neutral-text">
+        {payload[0].value}
+        {payload[0].name === "minutes"
+          ? " min"
+          : payload[0].name === "score"
+          ? "%"
+          : ""}
+      </p>
+    </div>
+  );
+}
+
+function StatSkeleton() {
+  return (
+    <div className="bg-white border border-neutral-border rounded-2xl p-5 animate-pulse">
+      <div className="w-10 h-10 rounded-xl bg-neutral-200 mb-4" />
+      <div className="h-6 w-1/3 bg-neutral-200 rounded-full mb-2" />
+      <div className="h-3 w-2/3 bg-neutral-200 rounded-full" />
     </div>
   );
 }
 
 export default function DashboardPage() {
+  const [stats, setStats] = useState<DashboardStats>(DEFAULT_STATS);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/documents/stats`,
+          { headers: { "x-user-id": "demo-user-id" } }
+        );
+        const data = await res.json();
+        setStats({
+          totalDocuments: data.totalDocuments ?? 0,
+          totalFlashcards: data.totalFlashcards ?? 0,
+          totalQuizzes: data.totalQuizzes ?? 0,
+          recentDocuments: data.recentDocuments ?? [],
+          documentsOverTime: data.documentsOverTime ?? [],
+        });
+      } catch (err) {
+        console.error("Failed to fetch stats:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStats();
+  }, []);
+
+  const statCards = [
+    {
+      label: "Documents uploaded",
+      value: stats.totalDocuments,
+      icon: <HiOutlineDocumentText size={20} />,
+      color: "bg-primary/10 text-primary",
+    },
+    {
+      label: "Flashcards generated",
+      value: stats.totalFlashcards,
+      icon: <HiOutlineRectangleStack size={20} />,
+      color: "bg-amber-100 text-amber-600",
+    },
+    {
+      label: "Quizzes completed",
+      value: stats.totalQuizzes,
+      icon: <HiOutlineClipboardDocumentList size={20} />,
+      color: "bg-green-100 text-green-600",
+    },
+    {
+      label: "Day streak",
+      value: 9,
+      icon: <HiOutlineFire size={20} />,
+      color: "bg-red-100 text-red-500",
+    },
+  ];
+
   return (
+     <ProtectedRoute>
     <main className="min-h-screen bg-neutral-bg">
       {/* Header */}
       <div className="bg-white border-b border-neutral-border">
@@ -156,7 +170,7 @@ export default function DashboardPage() {
           <FadeUp>
             <p className="text-sm text-neutral-text/50 mb-1">Good morning 👋</p>
             <h1 className="text-2xl font-bold text-neutral-text">
-              Welcome back, Tamim
+              Welcome back
             </h1>
           </FadeUp>
           <FadeUp delay={0.1}>
@@ -176,48 +190,96 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-8">
         {/* Stats cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {stats.map((stat, i) => (
-            <FadeUp key={stat.label} delay={i * 0.08}>
-              <div className="bg-white border border-neutral-border rounded-2xl p-5">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${stat.color}`}>
-                  {stat.icon}
-                </div>
-                <p className="text-2xl font-bold text-neutral-text">{stat.value}</p>
-                <p className="text-xs text-neutral-text/50 mt-1">{stat.label}</p>
-              </div>
-            </FadeUp>
-          ))}
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <StatSkeleton key={i} />
+              ))
+            : statCards.map((stat, i) => (
+                <FadeUp key={stat.label} delay={i * 0.08}>
+                  <div className="bg-white border border-neutral-border rounded-2xl p-5">
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${stat.color}`}
+                    >
+                      {stat.icon}
+                    </div>
+                    <p className="text-2xl font-bold text-neutral-text">
+                      {stat.value}
+                    </p>
+                    <p className="text-xs text-neutral-text/50 mt-1">
+                      {stat.label}
+                    </p>
+                  </div>
+                </FadeUp>
+              ))}
         </div>
 
-        {/* Charts row */}
+        {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Weekly activity — bar chart */}
+          {/* Weekly activity */}
           <FadeUp delay={0.1} className="lg:col-span-1">
             <div className="bg-white border border-neutral-border rounded-2xl p-6 h-full">
-              <h2 className="text-sm font-bold text-neutral-text mb-1">Weekly activity</h2>
-              <p className="text-xs text-neutral-text/40 mb-6">Minutes studied per day</p>
+              <h2 className="text-sm font-bold text-neutral-text mb-1">
+                Weekly activity
+              </h2>
+              <p className="text-xs text-neutral-text/40 mb-6">
+                Minutes studied per day
+              </p>
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={weeklyActivity} barSize={24}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#E2E8F0"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="day"
+                    tick={{ fontSize: 11, fill: "#94A3B8" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 11, fill: "#94A3B8" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
                   <Tooltip content={<ChartTooltip />} />
-                  <Bar dataKey="minutes" fill="#4F46E5" radius={[6, 6, 0, 0]} />
+                  <Bar
+                    dataKey="minutes"
+                    fill="#4F46E5"
+                    radius={[6, 6, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </FadeUp>
 
-          {/* Documents over time — line chart */}
+          {/* Documents over time */}
           <FadeUp delay={0.15} className="lg:col-span-1">
             <div className="bg-white border border-neutral-border rounded-2xl p-6 h-full">
-              <h2 className="text-sm font-bold text-neutral-text mb-1">Documents uploaded</h2>
-              <p className="text-xs text-neutral-text/40 mb-6">Cumulative over time</p>
+              <h2 className="text-sm font-bold text-neutral-text mb-1">
+                Documents uploaded
+              </h2>
+              <p className="text-xs text-neutral-text/40 mb-6">
+                Cumulative over time
+              </p>
               <ResponsiveContainer width="100%" height={180}>
-                <LineChart data={documentsOverTime}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
+                <LineChart data={stats.documentsOverTime}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#E2E8F0"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="month"
+                    tick={{ fontSize: 11, fill: "#94A3B8" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 11, fill: "#94A3B8" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
                   <Tooltip content={<ChartTooltip />} />
                   <Line
                     type="monotone"
@@ -232,16 +294,34 @@ export default function DashboardPage() {
             </div>
           </FadeUp>
 
-          {/* Quiz scores — line chart */}
+          {/* Quiz scores */}
           <FadeUp delay={0.2} className="lg:col-span-1">
             <div className="bg-white border border-neutral-border rounded-2xl p-6 h-full">
-              <h2 className="text-sm font-bold text-neutral-text mb-1">Quiz scores</h2>
-              <p className="text-xs text-neutral-text/40 mb-6">Score % over recent quizzes</p>
+              <h2 className="text-sm font-bold text-neutral-text mb-1">
+                Quiz scores
+              </h2>
+              <p className="text-xs text-neutral-text/40 mb-6">
+                Score % over recent quizzes
+              </p>
               <ResponsiveContainer width="100%" height={180}>
                 <LineChart data={quizScores}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-                  <XAxis dataKey="quiz" tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
-                  <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#E2E8F0"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="quiz"
+                    tick={{ fontSize: 11, fill: "#94A3B8" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    domain={[0, 100]}
+                    tick={{ fontSize: 11, fill: "#94A3B8" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
                   <Tooltip content={<ChartTooltip />} />
                   <Line
                     type="monotone"
@@ -257,72 +337,117 @@ export default function DashboardPage() {
           </FadeUp>
         </div>
 
-        {/* Bottom row — recent docs + quick actions */}
+        {/* Recent docs + quick actions */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent documents */}
           <FadeUp delay={0.1} className="lg:col-span-2">
             <div className="bg-white border border-neutral-border rounded-2xl p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-sm font-bold text-neutral-text">Recent documents</h2>
-                <Link href="/materials/manage" className="text-xs text-primary hover:underline">
+                <h2 className="text-sm font-bold text-neutral-text">
+                  Recent documents
+                </h2>
+                <Link
+                  href="/materials/manage"
+                  className="text-xs text-primary hover:underline"
+                >
                   View all
                 </Link>
               </div>
 
-              <div className="space-y-3">
-                {recentDocuments.map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between p-4 rounded-xl border border-neutral-border hover:border-primary/30 transition-colors"
+              {loading ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-14 bg-neutral-100 rounded-xl animate-pulse"
+                    />
+                  ))}
+                </div>
+              ) : stats.recentDocuments.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-xs text-neutral-text/40">
+                    No documents yet.
+                  </p>
+                  <Link
+                    href="/materials/add"
+                    className="text-xs text-primary hover:underline mt-1 block"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-                        <HiOutlineDocumentText size={16} />
+                    Upload your first one
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {stats.recentDocuments.map((doc) => (
+                    <div
+                      key={doc._id}
+                      className="flex items-center justify-between p-4 rounded-xl border border-neutral-border hover:border-primary/30 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                          <HiOutlineDocumentText size={16} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-neutral-text line-clamp-1">
+                            {doc.title}
+                          </p>
+                          <p className="text-xs text-neutral-text/40 mt-0.5">
+                            {new Date(doc.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              }
+                            )}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold text-neutral-text line-clamp-1">
-                          {doc.title}
-                        </p>
-                        <p className="text-xs text-neutral-text/40 mt-0.5">
-                          {doc.category} · {doc.flashcards} cards · {doc.quizQuestions} questions
-                        </p>
-                      </div>
-                    </div>
 
-                    <div className="flex items-center gap-3 ml-4">
-                      {doc.status === "processing" ? (
-                        <span className="text-xs bg-amber-100 text-amber-600 px-3 py-1 rounded-full font-medium">
-                          Processing
-                        </span>
-                      ) : (
-                        <Link href={`/explore/${doc.id}`}>
-                          <button
-                            type="button"
-                            className="text-xs font-medium text-primary border border-primary/30 rounded-xl px-3 py-1.5 hover:bg-primary hover:text-white transition-colors"
-                          >
-                            Study
-                          </button>
-                        </Link>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {doc.status === "processing" ? (
+                          <span className="text-xs bg-amber-100 text-amber-600 px-3 py-1 rounded-full">
+                            Processing
+                          </span>
+                        ) : doc.status === "ready" ? (
+                          <Link href="/materials/manage">
+                            <button
+                              type="button"
+                              className="text-xs font-medium text-primary border border-primary/30 rounded-xl px-3 py-1.5 hover:bg-primary hover:text-white transition-colors"
+                            >
+                              Study
+                            </button>
+                          </Link>
+                        ) : (
+                          <span className="text-xs bg-red-100 text-red-500 px-3 py-1 rounded-full">
+                            Failed
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </FadeUp>
 
           {/* Quick actions */}
           <FadeUp delay={0.15}>
             <div className="bg-white border border-neutral-border rounded-2xl p-6">
-              <h2 className="text-sm font-bold text-neutral-text mb-6">Quick actions</h2>
+              <h2 className="text-sm font-bold text-neutral-text mb-6">
+                Quick actions
+              </h2>
               <div className="flex flex-col gap-3">
                 {quickActions.map((action) => (
                   <Link key={action.label} href={action.href}>
-                    <div className={`flex items-center gap-4 px-4 py-4 rounded-xl transition-colors cursor-pointer ${action.color}`}>
+                    <div
+                      className={`flex items-center gap-4 px-4 py-4 rounded-xl transition-colors cursor-pointer ${action.color}`}
+                    >
                       {action.icon}
                       <div>
                         <p className="text-sm font-semibold">{action.label}</p>
-                        <p className="text-xs opacity-60">{action.description}</p>
+                        <p className="text-xs opacity-60">
+                          {action.description}
+                        </p>
                       </div>
                     </div>
                   </Link>
@@ -333,5 +458,6 @@ export default function DashboardPage() {
         </div>
       </div>
     </main>
+    </ProtectedRoute>
   );
 }
