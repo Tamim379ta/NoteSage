@@ -22,7 +22,7 @@ export function CTA() {
                 Stop highlighting.<br />Start actually learning.
               </h2>
               <p className="text-white/60 text-sm">
-                Upload your first set of notes and get summaries, flashcards, and a quiz — ready in seconds.
+                Upload your first document to generate instant summaries and start chatting with NoteSage in seconds.
               </p>
             </div>
 
@@ -41,7 +41,7 @@ export function CTA() {
                   type="button"
                   className="w-full rounded-xl border border-white/30 text-white px-8 py-3 text-sm font-semibold transition hover:bg-white/10"
                 >
-                  Explore study sets
+                  Explore materials
                 </button>
               </Link>
             </div>

@@ -1,10 +1,10 @@
 import { FadeUp } from "@/components/animations/FadeUp";
 
 const stats = [
-  { value: "50K+", label: "Students enrolled" },
-  { value: "2M+", label: "Notes processed" },
-  { value: "8M+", label: "Flashcards generated" },
-  { value: "95%", label: "Report better grades" },
+  { value: "50K+", label: "Students learning" },
+  { value: "2M+", label: "Documents analyzed" },
+  { value: "10M+", label: "AI responses & chats" },
+  { value: "95%", label: "Report faster study time" },
 ];
 
 export function Stats() {

@@ -12,25 +12,25 @@ const values = [
     icon: <HiOutlineLightBulb size={22} />,
     title: "Learning first",
     description:
-      "Every feature we build starts with one question: does this help students actually retain what they study?",
+      "Every feature we build starts with one question: does this help students actually understand and retain what they read?",
   },
   {
     icon: <HiOutlineSparkles size={22} />,
-    title: "AI as a tool, not a crutch",
+    title: "AI as an intelligent assistant",
     description:
-      "We believe AI should make you a better student — not do the thinking for you. NoteSage guides you to understanding.",
+      "We believe AI should guide you through complex study materials — generating concise summaries and answering questions in exact context.",
   },
   {
     icon: <HiOutlineHeart size={22} />,
     title: "Built with students",
     description:
-      "NoteSage was designed with real student feedback from day one. If it doesn't help in a real study session, it doesn't ship.",
+      "NoteSage was designed with real student feedback from day one. If it doesn't make reading and reviewing lectures faster, it doesn't ship.",
   },
   {
     icon: <HiOutlineShieldCheck size={22} />,
     title: "Privacy by default",
     description:
-      "Your notes are yours. We never share your uploaded content, sell your data, or use it to train AI models.",
+      "Your documents are yours. You control whether your study materials stay private or are shared publicly in the Explore directory.",
   },
 ];
 
@@ -75,8 +75,7 @@ export default function AboutPage() {
               We built the study tool<br />we wish we had.
             </h1>
             <p className="text-neutral-text/60 text-base max-w-xl mx-auto">
-              NoteSage started as a side project between two students who were tired of
-              re-reading the same notes five times and still forgetting everything on exam day.
+              NoteSage started as a side project between students who were tired of drowning in 50-page PDF slides and textbooks right before exam night.
             </p>
           </FadeUp>
         </div>
@@ -90,7 +89,7 @@ export default function AboutPage() {
               Our mission
             </span>
             <h2 className="text-2xl md:text-3xl font-bold text-white mt-3 max-w-2xl mx-auto leading-snug">
-              Make deep understanding accessible to every student, regardless of how they learn.
+              Make deep understanding accessible to every student by transforming long documents into instant summaries and interactive chats.
             </h2>
           </div>
         </FadeUp>
@@ -151,7 +150,7 @@ export default function AboutPage() {
               Ready to study smarter?
             </h2>
             <p className="text-sm text-neutral-text/60 mb-8">
-              Join thousands of students already using NoteSage.
+              Join thousands of students already using NoteSage to summarize notes and chat with their materials.
             </p>
             <Link href="/register">
               <button

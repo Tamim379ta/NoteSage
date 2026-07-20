@@ -1,43 +1,43 @@
 import { FadeUp } from "@/components/animations/FadeUp";
 import {
   HiOutlineDocumentText,
-  HiOutlineRectangleStack,
-  HiOutlineClipboardDocumentList,
   HiOutlineChatBubbleLeftRight,
-  HiOutlineChartBar,
+  HiOutlineFolderOpen,
+  HiOutlineGlobeAlt,
+  HiOutlineBolt,
   HiOutlineArrowDownTray,
 } from "react-icons/hi2";
 
 const features = [
   {
     icon: <HiOutlineDocumentText size={24} />,
-    title: "AI Summaries",
-    description: "Get the key points from any document in seconds — no more re-reading 40 pages the night before an exam.",
-  },
-  {
-    icon: <HiOutlineRectangleStack size={24} />,
-    title: "Smart Flashcards",
-    description: "AI pulls the most important concepts and turns them into flashcards you can flip through anywhere.",
-  },
-  {
-    icon: <HiOutlineClipboardDocumentList size={24} />,
-    title: "Auto Quizzes",
-    description: "Test yourself with AI-generated questions based on your actual notes — not generic practice questions.",
+    title: "Instant AI Summaries",
+    description: "Upload any lecture PDF or notes to instantly generate clear 5-7 point summaries focused on key concepts.",
   },
   {
     icon: <HiOutlineChatBubbleLeftRight size={24} />,
-    title: "AI Tutor Chat",
-    description: "Ask the AI anything about your uploaded material. It knows your notes and explains concepts clearly.",
+    title: "Context-Aware AI Tutor",
+    description: "Chat with NoteSage anytime. It references your uploaded documents directly to answer questions precisely.",
   },
   {
-    icon: <HiOutlineChartBar size={24} />,
-    title: "Progress Tracking",
-    description: "See which topics you've mastered and which need more work — with streaks to keep you consistent.",
+    icon: <HiOutlineFolderOpen size={24} />,
+    title: "Organized Study Library",
+    description: "Keep all your PDFs, lecture slides, and subject materials neatly organized in one accessible space.",
+  },
+  {
+    icon: <HiOutlineGlobeAlt size={24} />,
+    title: "Explore Public Materials",
+    description: "Browse and discover shared study materials from other students organized by categories and subjects.",
+  },
+  {
+    icon: <HiOutlineBolt size={24} />,
+    title: "Lightning Fast Responses",
+    description: "Powered by high-performance Llama 3 models so you get instant summaries and real-time streaming answers.",
   },
   {
     icon: <HiOutlineArrowDownTray size={24} />,
-    title: "Export Summaries",
-    description: "Download your AI-generated summaries as PDFs to review offline or share with classmates.",
+    title: "Easy Material Sharing",
+    description: "Toggle privacy settings on your uploaded documents to share notes seamlessly with peers or keep them private.",
   },
 ];
 
@@ -50,10 +50,10 @@ export function Features() {
             Everything you need
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-neutral-text mt-3">
-            Built for students who actually want to learn
+            Built for effortless document-based learning
           </h2>
           <p className="text-neutral-text/60 mt-4 max-w-xl mx-auto text-sm">
-            Every feature in NoteSage is designed around one goal — helping you retain what you study, not just read it.
+            Upload your materials, get instant summaries, and chat directly with your notes to master any topic.
           </p>
         </FadeUp>
 

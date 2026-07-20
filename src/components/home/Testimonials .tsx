@@ -8,14 +8,14 @@ const testimonials = [
     role: "Medical Student, Johns Hopkins",
     avatar: "SC",
     review:
-      "I uploaded 3 months of anatomy notes and NoteSage turned them into 200 flashcards in under a minute. I passed my boards on the first try.",
+      "I uploaded 3 months of anatomy PDFs and NoteSage generated clean, point-by-point summaries in under a minute. It saved me hours during exam review.",
   },
   {
     name: "Marcus Williams",
     role: "Computer Science, MIT",
     avatar: "MW",
     review:
-      "The AI tutor actually understands my notes and explains concepts in context. It's like having a study partner who read everything I did.",
+      "The AI tutor actually understands my notes and explains complex code concepts in context. It's like having a study partner who read everything I did.",
   },
   {
     name: "Priya Patel",
@@ -29,7 +29,7 @@ const testimonials = [
     role: "Finance, LSE",
     avatar: "JO",
     review:
-      "The quizzes are scarily accurate — they test exactly what the professor focuses on because they're built from my actual lecture notes.",
+      "Being able to upload a lecture slide deck and immediately start asking the chatbot specific questions about formulas is an incredible feature.",
   },
   {
     name: "Lena Müller",
@@ -57,7 +57,7 @@ const testimonials = [
     role: "Economics, Oxford",
     avatar: "TF",
     review:
-      "The flashcard quality blew me away. They're not just definitions — they actually capture the nuance of economic concepts from my notes.",
+      "I love checking the Explore section to see public study materials uploaded by other students. It's a huge time saver for shared topics.",
   },
 ];
 
@@ -114,14 +114,16 @@ export function Testimonials() {
         </Marquee>
       </FadeUp>
 
-      {/* Row 2 — right to left */}
-      {/* <FadeUp delay={0.1} className="mt-4">
+      {/* Row 2 — right to left (uncomment if you want to display both rows) */}
+      {/* 
+      <FadeUp delay={0.1} className="mt-4">
         <Marquee pauseOnHover speed={40} direction="right" gradient gradientColor="#ffffff" gradientWidth={80}>
           {secondRow.map((t) => (
             <TestimonialCard key={t.name} t={t} />
           ))}
         </Marquee>
-      </FadeUp> */}
+      </FadeUp> 
+      */}
     </section>
   );
 }

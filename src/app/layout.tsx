@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Navbar,  } from "@/components/shared/Navbar";
-import { Footer } from "@/components/shared/Footer";
+import { Navbar } from "@/components/shared/Navbar";
+import { FooterWrapper } from "@/components/shared/FooterWrapper";
 
 export const metadata: Metadata = {
   title: "Notesage",
-  description: "AI-powered study companion — turn your notes into summaries, quizzes, and flashcards.",
+  description: "AI-powered study companion — turn your notes into summaries and interactive AI chats.",
 };
 
 export default function RootLayout({
@@ -15,10 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-neutral-bg text-neutral-text">
-        <Navbar/>
+      <body className="bg-neutral-bg text-neutral-text flex flex-col min-h-screen">
+        <Navbar />
         {children}
-        <Footer/>
+        <FooterWrapper />
       </body>
     </html>
   );

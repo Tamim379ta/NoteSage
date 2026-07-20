@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { HiSparkles } from "react-icons/hi2";
+import { HiSparkles, HiPaperAirplane } from "react-icons/hi2";
 
 const fadeLeft = {
   hidden: { opacity: 0, x: -30 },
@@ -13,7 +13,7 @@ export function Hero() {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section className="w-full min-h-[80vh] flex items-center">
+    <section className="w-full min-h-[80vh] flex items-center py-12">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center w-full">
         {/* Left: copy */}
         <motion.div
@@ -41,7 +41,7 @@ export function Hero() {
             transition={{ duration: 0.5 }}
             className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] text-neutral-text mb-6"
           >
-            Turn messy notes into study material that actually sticks.
+            Turn long PDFs into instant summaries and interactive chats.
           </motion.h1>
 
           <motion.p
@@ -49,8 +49,7 @@ export function Hero() {
             transition={{ duration: 0.5 }}
             className="text-base md:text-lg text-neutral-text/70 max-w-md mb-8"
           >
-            Upload your notes and NoteSage turns them into summaries,
-            flashcards, and quizzes — then keeps quizzing you until it sticks.
+            Upload your study materials, get concise AI-generated summaries, and ask NoteSage anything about your documents in real-time.
           </motion.p>
 
           <motion.div
@@ -61,7 +60,7 @@ export function Hero() {
             <Link href="/register">
               <button
                 type="button"
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
+                className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90 shadow-sm"
               >
                 Start studying free
               </button>
@@ -69,38 +68,41 @@ export function Hero() {
             <Link href="/explore">
               <button
                 type="button"
-                className="rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-primary hover:text-primary"
+                className="rounded-md border border-neutral-300 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:border-primary hover:text-primary"
               >
-                See it in action
+                Explore materials
               </button>
             </Link>
           </motion.div>
         </motion.div>
 
-        {/* Right: signature element — note becomes flashcard */}
-        <div className="relative h-[360px] hidden md:block">
-          {/* Messy note card */}
+        {/* Right: PDF Document -> AI Chat preview */}
+        <div className="relative h-[380px] hidden md:block">
+          {/* Uploaded PDF preview card */}
           <motion.div
-            initial={{ opacity: 0, x: -20, rotate: -12 }}
-            animate={{ opacity: 1, x: 0, rotate: -8 }}
+            initial={{ opacity: 0, x: -20, rotate: -8 }}
+            animate={{ opacity: 1, x: 0, rotate: -6 }}
             transition={{ duration: 0.6 }}
-            className="absolute left-2 top-6 w-[220px] h-[270px] bg-white border border-neutral-border rounded-lg shadow-md p-5"
+            className="absolute left-2 top-8 w-[230px] h-[280px] bg-white border border-neutral-200 rounded-xl shadow-md p-5 flex flex-col justify-between"
           >
             <div className="space-y-3">
-              <div className="h-2 w-3/4 bg-neutral-text/20 rounded-full" />
-              <div className="h-2 w-full bg-neutral-text/20 rounded-full" />
-              <div className="h-2 w-5/6 bg-accent/40 rounded-full" />
-              <div className="h-2 w-2/3 bg-neutral-text/20 rounded-full" />
-              <div className="h-2 w-full bg-neutral-text/20 rounded-full" />
-              <div className="h-2 w-1/2 bg-accent/40 rounded-full" />
-              <div className="h-2 w-3/4 bg-neutral-text/20 rounded-full" />
+              <div className="flex items-center gap-2 mb-2">
+                <span className="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded">PDF</span>
+                <span className="text-xs font-medium text-neutral-700 truncate">lecture_notes.pdf</span>
+              </div>
+              <div className="h-2 w-3/4 bg-neutral-200 rounded-full" />
+              <div className="h-2 w-full bg-neutral-200 rounded-full" />
+              <div className="h-2 w-5/6 bg-primary/20 rounded-full" />
+              <div className="h-2 w-2/3 bg-neutral-200 rounded-full" />
+              <div className="h-2 w-full bg-neutral-200 rounded-full" />
+              <div className="h-2 w-1/2 bg-primary/20 rounded-full" />
             </div>
-            <span className="absolute bottom-3 right-4 text-[10px] font-mono text-neutral-text/40">
-              lecture_09.pdf
-            </span>
+            <div className="bg-neutral-50 p-2 rounded text-[11px] text-neutral-500 border border-neutral-100">
+              ⚡ Summary Ready
+            </div>
           </motion.div>
 
-          {/* Center spark badge */}
+          {/* Sparkle badge connector */}
           <motion.div
             initial={{ opacity: 0, scale: 0.6 }}
             animate={
@@ -118,22 +120,36 @@ export function Hero() {
             <HiSparkles size={22} />
           </motion.div>
 
-          {/* Flashcard result */}
+          {/* Interactive Chat window result */}
           <motion.div
-            initial={{ opacity: 0, x: 20, rotate: 12 }}
-            animate={{ opacity: 1, x: 0, rotate: 6 }}
+            initial={{ opacity: 0, x: 20, rotate: 6 }}
+            animate={{ opacity: 1, x: 0, rotate: 4 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="absolute right-2 top-0 w-[230px] h-[290px] bg-primary text-white rounded-2xl shadow-xl p-6 flex flex-col justify-between"
+            className="absolute right-2 top-2 w-[260px] h-[330px] bg-neutral-900 text-white rounded-2xl shadow-xl p-4 flex flex-col justify-between border border-neutral-800"
           >
-            <div>
-              <span className="text-[10px] font-mono tracking-widest uppercase text-white/60">
-                Flashcard · 3 of 12
-              </span>
-              <p className="mt-4 text-lg font-semibold leading-snug">
-                What triggers the light-dependent reactions in photosynthesis?
-              </p>
+            {/* Header */}
+            <div className="flex items-center gap-2 border-b border-neutral-800 pb-3">
+              <div className="w-2 h-2 rounded-full bg-green-400" />
+              <span className="text-xs font-medium text-neutral-300">NoteSage AI Assistant</span>
             </div>
-            <span className="text-xs text-white/60">Tap to flip →</span>
+
+            {/* Chat Body */}
+            <div className="space-y-3 my-2 text-xs">
+              <div className="bg-neutral-800 text-neutral-200 p-2.5 rounded-lg rounded-tl-none self-start max-w-[85%]">
+                How can I help with <span className="text-primary font-medium">lecture_notes.pdf</span>?
+              </div>
+              <div className="bg-primary text-white p-2.5 rounded-lg rounded-tr-none ml-auto max-w-[85%]">
+                Summarize chapter 3 for me!
+              </div>
+            </div>
+
+            {/* Input Bar */}
+            <div className="flex items-center gap-2 bg-neutral-800 p-2 rounded-lg border border-neutral-700">
+              <span className="text-[11px] text-neutral-400 flex-1">Ask a question...</span>
+              <div className="p-1.5 bg-primary text-white rounded-md">
+                <HiPaperAirplane size={12} />
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>

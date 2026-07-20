@@ -1,27 +1,26 @@
-import { HiOutlineCloudArrowUp, HiOutlineSparkles, HiOutlineAcademicCap } from "react-icons/hi2";
+import { HiOutlineCloudArrowUp, HiOutlineSparkles, HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 import { FadeUp } from "@/components/animations/FadeUp";
 
 const steps = [
   {
     icon: <HiOutlineCloudArrowUp size={28} />,
     step: "01",
-    title: "Upload your notes",
-    description: "Drop in a PDF, DOCX, or plain text file — lecture notes, textbook chapters, anything you study from.",
+    title: "Upload study materials",
+    description: "Drop in your lecture PDFs or study documents into your personal dashboard in seconds.",
   },
   {
     icon: <HiOutlineSparkles size={28} />,
     step: "02",
-    title: "AI does the heavy lifting",
-    description: "NoteSage reads your material and generates a summary, flashcard set, and quiz — in seconds.",
+    title: "Get instant AI summaries",
+    description: "NoteSage extracts the text and automatically compiles the key takeaways into concise bullet points.",
   },
   {
-    icon: <HiOutlineAcademicCap size={28} />,
+    icon: <HiOutlineChatBubbleLeftRight size={28} />,
     step: "03",
-    title: "Study smarter",
-    description: "Work through flashcards, take the quiz, and chat with the AI tutor when you get stuck.",
+    title: "Chat with your notes",
+    description: "Ask questions anytime. NoteSage references your uploaded documents to provide accurate, context-aware answers.",
   },
 ];
-
 
 export function HowItWorks() {
   return (
@@ -32,14 +31,14 @@ export function HowItWorks() {
             Simple by design
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-neutral-text mt-3">
-            From notes to mastery in 3 steps
+            From PDF to understanding in 3 steps
           </h2>
         </FadeUp>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {steps.map((step, i) => (
             <FadeUp key={step.step} delay={i * 0.1}>
-              <div className="flex flex-col items-center text-center p-8 rounded-2xl border border-neutral-border bg-neutral-bg">
+              <div className="flex flex-col items-center text-center p-8 rounded-2xl border border-neutral-border bg-neutral-bg h-full">
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-5">
                   {step.icon}
                 </div>

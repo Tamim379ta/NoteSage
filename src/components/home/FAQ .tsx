@@ -8,32 +8,32 @@ const faqs = [
   {
     question: "What file types does NoteSage support?",
     answer:
-      "NoteSage supports PDF, DOCX, and plain TXT files. You can upload lecture notes, textbook chapters, case briefs, or any study material in these formats.",
+      "NoteSage currently supports PDF documents as well as plain text files. You can upload lecture notes, textbook chapters, or research papers in these formats.",
   },
   {
     question: "How accurate are the AI-generated summaries?",
     answer:
-      "The summaries are generated directly from your uploaded content — not from general knowledge. This means they stay accurate and relevant to your specific material, not a generic topic overview.",
+      "Summaries are extracted directly from your uploaded document's contents. This ensures that key concepts stay grounded in your exact study material.",
   },
   {
-    question: "Can I edit the flashcards and quizzes after they're generated?",
+    question: "Can I choose to make my documents public or keep them private?",
     answer:
-      "Yes — every flashcard and quiz question is editable. You can tweak wording, remove irrelevant cards, or add your own manually.",
+      "Yes! When uploading a document, you can toggle its visibility. Public documents appear in the community Explore tab, while private documents remain visible only to you.",
   },
   {
-    question: "Is my data private?",
+    question: "How does the AI Chat assistant use my document?",
     answer:
-      "Your uploaded documents are only used to generate your study material and are never shared with other users or used to train AI models. You can delete your files at any time.",
+      "When you initiate a chat with a specific document attached, NoteSage uses that document as its primary reference to ground its answers, ensuring accurate explanations.",
   },
   {
-    question: "Does the AI chat know what's in my notes?",
+    question: "Can I chat with NoteSage without attaching a document?",
     answer:
-      "Yes. When you open the AI chat from a document, it has full context of that document's content. You can ask it to explain a concept, quiz you, or clarify something confusing — and it answers based on your actual notes.",
+      "Absolutely! You can use NoteSage as a general AI tutor anytime to ask general study questions or brainstorm topics.",
   },
   {
-    question: "Is NoteSage free to use?",
+    question: "Is my data safe and private?",
     answer:
-      "NoteSage has a free tier that lets you process up to 5 documents per month. For unlimited uploads, priority processing, and export features, you can upgrade to a paid plan anytime.",
+      "Your uploaded documents and personal chats are securely stored and accessible only according to your privacy settings. You can manage or delete your materials at any time.",
   },
 ];
 
